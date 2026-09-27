@@ -1,0 +1,98 @@
+sudo gvm-start
+```
+
+Service status and configuration correct ah iruka nu verify panna:
+```bash
+sudo gvm-check-setup
+```
+*(Setup check la ella checks um `OK` nu varanum)*.
+
+*(Oru vela lab machine la **Nessus** iruntha: `sudo systemctl start nessusd` run pannanum)*.
+
+---
+
+#### Step 2: Web Interface Login
+Browser (Firefox) open panni intha local URL-ku poga vendum[cite: 3]:
+* **OpenVAS:** `[https://127.0.0.1:9392](https://127.0.0.1:9392)`[cite: 3]
+* **Nessus:** `[https://127.0.0.1:8834](https://127.0.0.1:8834)`[cite: 3]
+
+Browser la *SSL Certificate Warning* vantha, **Advanced -> Accept the Risk and Continue** click pannanum.
+Apram Kali setup pannappo create panna **Username** and **Password** pottu dashboard kula login pannanum[cite: 3].
+
+---
+
+#### Step 3: Target Configure Panradhu
+1. OpenVAS menu la **Configuration** -> **Targets** click pannanum[cite: 3].
+2. Top left la irukra **New Target** icon click pannanum[cite: 3].
+3. Target Name kuduthutu (e.g., `Metasploitable2`), **Hosts** edathula target IP address enter pannanum (e.g., `192.168.56.101`)[cite: 3].
+4. **Save** click pannanum.
+
+---
+
+#### Step 4: Scan Task Create Panni Run Panradhu
+1. OpenVAS menu la **Scans** -> **Tasks** click pannanum[cite: 3].
+2. **New Task** select panni:
+   * **Task Name:** `Lab Vulnerability Scan`
+   * **Scan Targets:** Step 3 la create panna target ah select pannanum[cite: 3].
+   * **Scan Config:** **`Full and Fast`** select pannanum[cite: 3].
+3. **Save** pannitu, play button (Start) click panna scan run aaga aarambikum[cite: 3].
+4. Scan progress `0%` la irunthu `100%` aagi complete aagura varaikum wait pannanum[cite: 3].
+
+---
+
+#### Step 5: Report Interpret & Analysis
+Scan mudinjavudan **Scans -> Reports** poi scan report open pannanum[cite: 3].
+Vulnerabilities severity base panni categorize aagi irukum[cite: 3]:
+* **High / Critical:** Immediate exploit panna koodiya vulnerabilities[cite: 3].
+* **Medium:** Sensitive info leakage or misconfigurations[cite: 3].
+* **Low / Log:** Service banners and basic network info[cite: 3].
+
+---
+
+### Key Findings & Remediations (Lab Record / Report ku)
+
+Manual la ethavathu **2-3 key findings mariyum remediations** document panna sollirukaanga[cite: 3]. Metasploitable2 scan panna regular ah kedaikira findings:
+
+1. **vsftpd 2.3.4 Backdoor (Port 21)**
+   * **Severity:** Critical (CVSS 10.0)[cite: 3]
+   * **CVE:** CVE-2011-2523[cite: 3]
+   * **Remediation:** Outdated vsftpd package ah latest patched version ku update pannanum[cite: 3].
+
+2. **UnrealIRCd Backdoor Execution (Port 6667)**
+   * **Severity:** Critical[cite: 3]
+   * **CVE:** CVE-2010-2075[cite: 3]
+   * **Remediation:** Vulnerable Unreal3.2-beta binary ah safe clean version vechu replace pannanum[cite: 3].
+
+3. **Weak / Default SSH Credentials (Port 22)**
+   * **Severity:** High[cite: 3]
+   * **Remediation:** Default passwords disable panni, SSH Key-based authentication enforce pannanum[cite: 3].
+
+---
+
+### GitHub Commands File Update
+
+Manual commands and notes cheat sheet file la add panna:
+
+```bash
+cat << 'EOF' >> ~/vapt/hydra-manual-lab/commands.txt
+
+=====================================================
+EXPERIMENT 4: OPENVAS / NESSUS VULNERABILITY SCAN
+=====================================================
+
+1. START OPENVAS SERVICE:
+   sudo gvm-start
+   sudo gvm-check-setup
+
+2. WEB UI ACCESS:
+   URL: https://127.0.0.1:9392 (OpenVAS)
+   URL: https://127.0.0.1:8834 (Nessus)
+
+3. SCAN CONFIG:
+   Target: <TARGET_IP>
+   Config: Full and Fast
+
+4. CLI SCAN ALTERNATIVE:
+   gvm-cli socket --xml "<create_target><name>LabTarget</name><hosts>192.168.56.101</hosts></create_target>"
+=====================================================
+EOF
